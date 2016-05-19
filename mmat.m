@@ -12,9 +12,10 @@ function [Gmag,Gdir,RGB] = mmat(I)
 %     Gy = conv2(I,mi,'same');
 %     [Gmag, Gdir] = imgradient(Gx, Gy);
 
+    Gmag = Gmag/max(max(Gmag));
+
     Gdir = Gdir+90;
     Gdir(Gdir < 0) = Gdir(Gdir < 0)+360;
-    Gmag = Gmag/max(max(Gmag));
 
     if nargout > 2
         H = Gdir/360;

@@ -14,7 +14,6 @@ function [Gmag,Gdir,RGB] = mat2(I)
     
     Gdir = atan2(Gy,Gx)/pi*180; % -180 to 180
     Gdir(Gdir < 0) = Gdir(Gdir < 0)+360; % 0 to 360
-    Gmag = Gmag/max(max(Gmag)); % 0 to 1
 
     if nargout > 2
         H = Gdir/360;

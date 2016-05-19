@@ -1,6 +1,6 @@
 % magnitudes and tangents
 
-I = double(imread('C3.png'));
+I = double(imread('C1.png'));
 
 % wavelet bank (arbitrary size)
 tic
