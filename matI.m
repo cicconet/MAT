@@ -1,10 +1,12 @@
-function [M,T,RGB] = mat(I)
+function [M,T,RGB] = matI(I)
     % magnitudes and tangents of grayscale, double, range [0,1] image I
     % M in [0,1], double
-    % T in 0:359, integer
+    % T in 0:359
     %     angles are measured counterclockwise from 'x' axis
     %     where 'x' is row and 'y' is column
-    % RGB: representation of M and T (see lines 46-51 for interpretation)
+    % RGB: representation of M and T (see lines 52-57 for interpretation)
+    % Similar to mat.m, but wavelet outputs are vector-averaged instead of
+    %     interpolated
     
     stretch = 0;
     scale = 1;
@@ -26,18 +28,22 @@ function [M,T,RGB] = mat(I)
 
     M = zeros(nr,nc);
     T = zeros(nr,nc);
-    k = fspecial('gaussian',[round(7*N/n)+1 1],N/n);
     for row = 1:nr
         for col = 1:nc
-            x = zeros(1,N);
+            x = zeros(2,n);
             for i = 1:n
-                x(round(orientations(i))+1) = J(row,col,i);
+                a = orientations(i)/N*2*pi; % 0 to 2*pi
+                x(:,i) = J(row,col,i)*[cos(a); sin(a)];
             end
-            y = conv(x,k,'same');
-            % y2 = abs(fft(y));
-            [m,im] = max(y);
-            M(row,col) = m; % y2(2);
-            T(row,col) = im-1;
+            mx = mean(x,2);
+            nmx = norm(mx);
+            M(row,col) = nmx;
+            mx = mx/nmx;
+            a = atan2(mx(2),mx(1))/pi*180; % -180 to 180;
+            if a < 0
+                a = a+360;
+            end
+            T(row,col) = a;
         end
     end
     M = M/max(max(M));

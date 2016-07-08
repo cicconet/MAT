@@ -1,24 +1,38 @@
 % magnitudes and tangents
 
-I = double(imread('C1.png'));
+I = double(imread('Test.png'))/255;
+if size(I,3) > 1
+    I = rgb2gray(I);
+end
+figure, imshow(I), title('input')
 
-% wavelet bank (arbitrary size)
-tic
-[~,~,RGB1] = mat(I);
-t1 = toc;
+% 'positive' ridges, wavelet bank, 0...179
+[~,~,RGB1] = matR(I,1);
+figure, imshow(RGB1), title('positive ridges')
 
-% matlab's implementation
-tic
-[~,~,RGB2] = mmat(I);
-t2 = toc;
+% 'negative' ridges, wavelet bank, 0...179
+[~,~,RGB2] = matR(I,-1);
+figure, imshow(RGB2), title('negative ridges')
 
-% 2 wavelets (x and y directions)
-tic
-[~,~,RGB3] = mat2(I);
-t3 = toc;
+% derivatives, wavelet bank, 0...359
+[~,~,RGB3] = matI(I);
+figure, imshow(RGB3), title('derivatives (wavelet bank)')
+
+% derivatives, matlab's implementation, 0...359
+[~,~,RGB4] = mmat(I);
+figure, imshow(RGB4), title('derivatives, matlab implementation')
+
+% derivatives, 2 wavelets (x and y directions), 0...359
+[~,~,RGB5] = mat2(I);
+figure, imshow(RGB5), title('derivatives, matlab with wavelets')
+
+% ridges and derivatives, wavelet bank, 0...179
+[~,~,RGB6] = matZ(I);
+figure, imshow(RGB6), title('ridges and derivatives, wavelets')
 
 % legend
 [nr,nc] = size(I);
+% Test = zeros(nr,nc);
 L = zeros(nr,nc,3);
 L(:,:,2) = 1;
 r0 = nr/2;
@@ -39,10 +53,4 @@ for a = 0:pi/16:2*pi-pi/16
     end
 end
 L = hsv2rgb(L);
-
-% separation
-S = 0.5*ones(nr,5,3);
-
-% plot
-imshow([RGB1 S RGB2 S RGB3 S L])
-title(sprintf('mat (%f s) ... mmat (%f s) ... mat2 (%f s) ... color/tangent mapping', t1, t2, t3))
+figure, imshow(L), title('legend (angles)')
